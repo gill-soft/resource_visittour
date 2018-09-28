@@ -49,6 +49,7 @@ import com.gillsoft.model.ServiceItem;
 import com.gillsoft.model.Ticket;
 import com.gillsoft.model.request.Request;
 import com.gillsoft.util.RestTemplateUtil;
+import com.gillsoft.util.StringUtil;
 
 @Component
 @Scope(value = ConfigurableBeanFactory.SCOPE_SINGLETON)
@@ -114,22 +115,19 @@ public class RestClient {
 					Location.getTypeReference());
 			if (countries != null && countries.length != 0) {
 				for (Location country : countries) {
-					/*Locality countryLocality = new Locality();
-					countryLocality.setId(String.valueOf(country.getId()));
+					Locality countryLocality = new Locality();
+					countryLocality.setId(StringUtil.md5(country.getName()));
 					countryLocality.setName(Lang.EN, country.getName());
 					localities.put(new BigDecimal(country.getId()), countryLocality);
-					Locality parentLocality = new Locality(countryLocality.getId());*/
+					Locality parentLocality = new Locality(countryLocality.getId());
 					Location[] cities = getResult(template, null, COUNTRIES + '/' + country.getId(), HttpMethod.GET,
 							Location.getTypeReference());
 					if (cities != null && cities.length != 0) {
 						for (Location city : cities) {
-							if (localities.containsKey(String.valueOf(city.getId()))) {
-								System.out.println(localities.get(String.valueOf(city.getId())).getName(Lang.EN.toString()) + '\t' + city.getName());
-							}
 							Locality cityLocality = new Locality();
 							cityLocality.setId(String.valueOf(city.getId()));
 							cityLocality.setName(Lang.EN, city.getName());
-							//cityLocality.setParent(parentLocality);
+							cityLocality.setParent(parentLocality);
 							localities.put(new BigDecimal(city.getId()), cityLocality);
 						}
 					}
